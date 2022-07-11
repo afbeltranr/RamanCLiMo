@@ -136,6 +136,19 @@ $$cm^{-1} = 10^7 \: \cdot \:  nm$$
 shift2 <- 1/(shift/10^7)
 ```
 
+The `range`s  of the x axes do not match with the expected values:
+
+```{r}
+range(shift)# allegedly nm
+range(shift2) # 1/cm from nm
+```
+
+So we create a new axis for sake of plotting:
+
+```{r}
+shift3 <- seq(200,4000, length = 1024)
+```
+
 
 For the plot:
 
@@ -144,7 +157,7 @@ For the plot:
 col <- c(rep('red',2),rep('pink',2),rep('black',3))
 
 for(i in 1:7){
-  plot(rev(shift2),
+  plot(shift3,
        df1[i,],
        type = 'l',
        col = col[i],
@@ -165,3 +178,39 @@ legend('topleft',names, col = col, lty = 1, cex= 0.5)
 
 ```
 At this moment we can see that replicates are very different between each other.
+
+
+## Baseline correction
+
+
+```{r, message = F}
+ library(hyperSpec)
+
+spc <- new('hyperSpec',
+           spc = df,
+           wavelength = shift3
+  
+)
+```
+
+```{r}
+bend <-  wl.eval(spc,
+                      function (x) 
+                      x^6+x^5+x^4+x^3+x^2,
+                      normalize.wl = 
+                        normalize01)
+```
+
+
+```{r, message = F, warning = F}
+bl <- spc.rubberband(spc+bend,
+                     noise = 5, 
+                     df = 20)-bend
+```
+
+
+```{r}
+plot(spc, wl.reverse = TRUE)
+plot(bl, add=TRUE, col=2,wl.reverse = TRUE)
+```
+
