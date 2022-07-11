@@ -1,0 +1,13 @@
+//Exported ASCII-File
+[Header]
+FileName = C:\Users\andre\Desktop\degradation of rods_Yohanna\20220706_rods number 309-1 and 309-4.wip
+GraphName = 309-1_50x_5mW_10acc_0.1s_004_Spec.Data 1
+SizeX = 1
+SizeY = 1
+SizeGraph = 1024
+PositionUnit = µm
+PositionX = -8915.10071463099
+PositionY = -2014.60213220921
+PositionZ = 0
+XAxisUnit = rel. 1/cm
+DataUnit = CCD cts

@@ -1,0 +1,11 @@
+name: Publish Document
+title:
+username:
+account: rpubs
+server: rpubs.com
+hostUrl: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/922661/c056202074ea45d79fedab5d049413b5
+bundleId: https://api.rpubs.com/api/v1/document/922661/c056202074ea45d79fedab5d049413b5
+url: http://rpubs.com/afbeltranr/922661/edit
+when: 1657489773.97934
+lastSyncTime: 1657489773.97934

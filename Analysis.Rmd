@@ -1,0 +1,167 @@
+---
+title: "Raman spectra data analysis"
+author: "Andres Beltran"
+date: '2022-07-09'
+output: rmdformats::downcute
+---
+
+
+# Loading the data
+
+As received the spectra is separated in different folders:
+
+```{r}
+dir('./degradation of rods_Yohanna/')
+```
+
+Two folders for two samples,  inside each folder we have:
+
+* First, for `309_1`:
+
+```{r}
+dir('./degradation of rods_Yohanna/309_1/')
+```
+* Second, for `309_2`:
+
+```{r}
+dir('./degradation of rods_Yohanna/309_4/')
+```
+
+Now we know that there are two replicates at 50 mW and two at 5 mW for sample `309_1`, and three replicates for `309_2` without further information depicted in the folder names. Nonetheless, each file name specifieas that all spectra for 309_4 is taken using 5 mW.
+
+The names that lack extension are folders, so within each folder we will find the file of the spectrum:
+
+```{r}
+dir('./degradation of rods_Yohanna/309_1/spectrum 1, 50mW/')
+```
+```{r}
+files <- list.files('./degradation of rods_Yohanna/', pattern = 'Data',recursive = TRUE)
+files
+```
+
+Once we know where the data files are, we can import them as follows:
+
+```{r}
+files <- paste0('./degradation of rods_Yohanna/',files)
+data <- lapply(files, read.table, header = F)
+```
+
+
+Once we have all the data we need in the object `data` we can transform it to examine it.
+
+First we check if the x axis is the same for all spectra:
+
+1 and 2: 
+
+```{r}
+sum(data[[1]][,1] == data[[2]][,1])
+nrow(data[[1]])
+```
+
+```{r}
+
+matches <- vector('numeric', length = 7)
+for (i in 1:7 ) {
+  
+ matches[i] <- sum(data[[1]][,1] == data[[i]][,1]) 
+  
+  
+}
+matches
+```
+
+Once we have verified that the x axis is the same for all of the spectra, we can extract it and save it separatelly as follows:
+
+
+```{r}
+shift <- as.numeric(data[[1]][,1])
+```
+
+and then, create a data.frame with all of the y axes for all samples:
+
+```{r}
+df1 <- as.data.frame(lapply(data, '[', 2))
+df1 <- as.data.frame(t(df1))
+colnames(df1) <- shift
+
+```
+
+to assign a shorter name for each sample, we can inspect and extract useful information from the file names `files`:
+
+
+```{r}
+files
+```
+
+```{r}
+names <- c('309_1_1 50 mW',
+           '309_1_2 50 mW',
+           '309_1_3 5 mW',
+           '309_1_4 5 mW',
+           '309_4_1 5 mW',
+           '309_4_2 5 mW',
+           '309_4_3 5 mW'
+           )
+```
+
+We now assing the sample names to the rows:
+
+```{r}
+rownames(df1) <- names
+```
+
+Since we received the x axis in nm, we proceed to express it in 1/cm:
+
+
+
+
+
+$$\bar{\nu} = \frac{1}{\lambda}\\$$
+
+$$\bar{\nu} \;[1/cm] = \frac{1}{\lambda [nm]} \\$$
+
+$$cm = 1 nm \: \cdot \: (\frac{1 m}{10^9 nm}) \: \cdot \: (\frac{10^2 cm}{1 m})\\$$
+
+$$cm^{-1} = (1 nm \: \cdot \: (\frac{1 m}{10^9 nm}) \: \cdot \: (\frac{10^2 cm}{1 m}))^{-1} \\$$
+
+$$cm^{-1} = (\frac{1}{10^7})^{-1} \: \cdot \:  nm \\$$
+
+$$cm^{-1} = 10^7 \: \cdot \:  nm$$
+
+
+
+
+
+```{r}
+shift2 <- 1/(shift/10^7)
+```
+
+
+For the plot:
+
+```{r}
+
+col <- c(rep('red',2),rep('pink',2),rep('black',3))
+
+for(i in 1:7){
+  plot(rev(shift2),
+       df1[i,],
+       type = 'l',
+       col = col[i],
+       xlim =,
+       ylim =,
+       xlab = '',
+       ylab = '',
+       axes = FALSE
+  
+  )
+    par(new =T)
+}
+axis(1)
+axis(2)
+box()
+
+legend('topleft',names, col = col, lty = 1, cex= 0.5)
+
+```
+At this moment we can see that replicates are very different between each other.
