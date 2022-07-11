@@ -182,13 +182,13 @@ At this moment we can see that replicates are very different between each other.
 
 ## Baseline correction
 
-
+Since all spectra are very different between each other (even between replicates)
 ```{r, message = F}
  library(hyperSpec)
 
 spc <- new('hyperSpec',
-           spc = df,
-           wavelength = shift3
+           spc = df[1, 50:1023],
+           wavelength = shift3[50:1023]
   
 )
 ```
@@ -204,13 +204,13 @@ bend <-  wl.eval(spc,
 
 ```{r, message = F, warning = F}
 bl <- spc.rubberband(spc+bend,
-                     noise = 5, 
+                     noise = 8, 
                      df = 20)-bend
 ```
 
 
 ```{r}
 plot(spc, wl.reverse = TRUE)
-plot(bl, add=TRUE, col=2,wl.reverse = TRUE)
+plot(bl, add=TRUE, col=2,wl.reverse = F)
 ```
 
