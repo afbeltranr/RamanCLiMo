@@ -182,35 +182,104 @@ At this moment we can see that replicates are very different between each other.
 
 ## Baseline correction
 
-Since all spectra are very different between each other (even between replicates)
-```{r, message = F}
+Since all spectra are very different between each other (even between replicates, a test can be found [here](https://github.com/afbeltranr/RamanCLiMo/blob/main/test/test.R)) it will be more useful if the estimation of the baseline is applied to each spectrum separately. 
+
+To do this iteratively, we can create a list to save each data frame in one slot of the list `listOfDf`:
+
+```{r}
+listOfDf <- vector('list', 7)
+```
+
+
+Now we create a data.frame in which we will save two parameters of baseline correction: 
+
+* One is the `noise` threshold at which the function recognizes the noise. 
+* The second one is the degrees of freedom used by the `smooth.spline` function available in the package `stats`. If not specified leave-one-out cross-validation (ordinary or ‘generalized’ as determined by cv) is used to determine smoothing parameters. 
+
+These parameters have been selected subjectively seeking for a better appearance of the spectra. If further analysis and information extraction were to be performed to this data set, these parameters should be selected via optimization using the correct objective function as optimization criteria.
+
+
+
+```{r, message = F, warning = F, echo = F}
  library(hyperSpec)
+library(dplyr)
+library(prospectr)
 
-spc <- new('hyperSpec',
-           spc = df[1, 50:1023],
-           wavelength = shift3[50:1023]
+
+spc  <- vector('list', 7)
+bend <- vector('list', 7)
+bl <- vector('list', 7)
+spc2 <- vector('list', 7)
+sg <- vector('list', 7)
+
+w2 <-30
+sg1 <- sg <- matrix(ncol = ncol(df1)-w2, nrow= nrow(df1))
+sg1 <- as.data.frame(sg1) 
+
+sg1 <- savitzkyGolay(X = df1
+                        ,m = 1,
+                        p = 2,
+                        w = w2+1)
+
+# for(i in 1:7){
+#   
+#   plot(as.numeric(colnames(sg1)),
+#        sg1[i,],
+#        xlab = 'raman shift',
+#        ylab = 'smoothed spectra',
+#        # xlim = c(1700,790),
+#              ylim = c(-15,15),
+#        type = 'l'
+#        # col = NaCl[i])
+# 
+#   )
+#     par(new = T)
+# }
+```
+```{r, warnings = F}
+library(hyperSpec)
+param <- data.frame(noise = c(10,17,8,8,200,15,50),
+                      df. = c(15,17,10,10,5,20,5))
+
+for(i in 1:7){
+
+listOfDf[[i]] <- df1[i,]
   
-)
+spc[[i]] <-            new('hyperSpec',
+                       spc = listOfDf[[i]][, 50:1023],
+                       wavelength = shift3[50:1023]) 
+
+bend[[i]]   <-         wl.eval(spc[[i]],
+                        function (x)
+                        x^6+x^5+x^4+x^3+x^2,
+                        normalize.wl =normalize01)
+
+ bl[[i]]  <-        spc.rubberband(spc[[i]]+bend[[i]],
+                     noise =param$noise[i],
+                     df = param$df.[i]
+                     )-bend[[i]]
+ 
+ spc2[[i]] <- spc[[i]] - bl[[i]]
+ 
+ 
+ plot(spc2[[i]], col = T)
+  par(new  = T)
+
+plot(spc[[i]], wl.reverse = F)
+plot(bl[[i]], add=TRUE, col=2,wl.reverse =F )
+ 
+}
+
+
+
+
 ```
+
+
+
 
 ```{r}
-bend <-  wl.eval(spc,
-                      function (x) 
-                      x^6+x^5+x^4+x^3+x^2,
-                      normalize.wl = 
-                        normalize01)
+sessionInfo()
 ```
 
-
-```{r, message = F, warning = F}
-bl <- spc.rubberband(spc+bend,
-                     noise = 8, 
-                     df = 20)-bend
-```
-
-
-```{r}
-plot(spc, wl.reverse = TRUE)
-plot(bl, add=TRUE, col=2,wl.reverse = F)
-```
 
