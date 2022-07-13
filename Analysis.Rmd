@@ -270,8 +270,39 @@ plot(bl[[i]], add=TRUE, col=2,wl.reverse =F )
  
 }
 
+a <- matrix(nrow  = 7, ncol = 974)
+ 
+ 
+for(i in  1:7){
+  
+ a[i,] <- t(as.data.frame(spc2[[i]][,1]$spc[1,]))
+  
+
+ 
+}
+
+ colnames(a) <- as.numeric(colnames(as.data.frame(spc2[[1]][,1]$spc)))
+ 
+ for(i in 1:7){
+   
+ plot(colnames(a),
+     a[i,],
+     type = 'l',
+     # axes = 'F',
+     ylab = '',
+     xlab = '',
+      ylim = c(0,200),
+     # xlim = c()
+     
+     )  
+   
+ }
 
 
+
+```
+
+```{r}
 
 ```
 
