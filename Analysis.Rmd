@@ -200,42 +200,7 @@ These parameters have been selected subjectively seeking for a better appearance
 
 
 
-```{r, message = F, warning = F, echo = F}
- library(hyperSpec)
-library(dplyr)
-library(prospectr)
 
-
-spc  <- vector('list', 7)
-bend <- vector('list', 7)
-bl <- vector('list', 7)
-spc2 <- vector('list', 7)
-sg <- vector('list', 7)
-
-w2 <-30
-sg1 <- sg <- matrix(ncol = ncol(df1)-w2, nrow= nrow(df1))
-sg1 <- as.data.frame(sg1) 
-
-sg1 <- savitzkyGolay(X = df1
-                        ,m = 1,
-                        p = 2,
-                        w = w2+1)
-
-# for(i in 1:7){
-#   
-#   plot(as.numeric(colnames(sg1)),
-#        sg1[i,],
-#        xlab = 'raman shift',
-#        ylab = 'smoothed spectra',
-#        # xlim = c(1700,790),
-#              ylim = c(-15,15),
-#        type = 'l'
-#        # col = NaCl[i])
-# 
-#   )
-#     par(new = T)
-# }
-```
 ```{r, warnings = F}
 library(hyperSpec)
 param <- data.frame(noise = c(10,17,8,8,200,15,50),
@@ -261,13 +226,12 @@ bend[[i]]   <-         wl.eval(spc[[i]],
  
  spc2[[i]] <- spc[[i]] - bl[[i]]
  
- 
- plot(spc2[[i]], col = T)
-  par(new  = T)
+   plot(spc2[[i]], col = T)
+ #  par(new  = T)
 
-plot(spc[[i]], wl.reverse = F)
+plot(spc[[i]],add=TRUE, wl.reverse = F)
 plot(bl[[i]], add=TRUE, col=2,wl.reverse =F )
- 
+  
 }
 
 a <- matrix(nrow  = 7, ncol = 974)
@@ -282,8 +246,10 @@ for(i in  1:7){
 }
 
  colnames(a) <- as.numeric(colnames(as.data.frame(spc2[[1]][,1]$spc)))
- 
- for(i in 1:7){
+```
+
+```{r}
+ for(i in c(1:7)[-5]){
    
  plot(colnames(a),
      a[i,],
@@ -293,20 +259,43 @@ for(i in  1:7){
      xlab = '',
       ylim = c(0,200),
      # xlim = c()
+     col = col[i]
      
      )  
-   
+   par(new = T)
  }
 
 
-
 ```
+```{r, message = F, warning = F, echo = F}
+ library(hyperSpec)
+library(dplyr)
+library(prospectr)
 
-```{r}
 
+w2 <-70
+sg1 <- sg <- matrix(ncol = ncol(a)-w2, nrow= nrow(a))
+sg1 <- as.data.frame(sg1) 
+
+sg1 <- savitzkyGolay(X = a
+                        ,m = 2  ,
+                        p = 7,
+                     w = w2+1)
+for(i in 1:7){
+
+  plot(as.numeric(colnames(sg1)),
+       sg1[i,],
+       xlab = 'raman shift',
+       ylab = 'smoothed spectra',
+       # xlim = c(1700,790),
+             ylim = c(-15,15),
+       type = 'l',
+       col = col[i])
+
+  
+    par(new = T)
+}
 ```
-
-
 
 
 ```{r}
