@@ -359,7 +359,18 @@ legend('topright',
        cex= 0.5)
 ```
 
-There is possible to differentiate the two samples via spectral comparison once baseline has been corrected.
+There is possible to differentiate the two samples via spectral comparison once baseline has been corrected. Nonetheless, it would be useful to use a smoothing procedure to have a clearer differentiation between samples:
+
+```{r}
+library(RamanMP)
+
+asg <- savit.gol(a[1,], 31, filt_order = 4, der_order = 0)
+plot(shift3,
+     asg,
+     type = l)
+
+```
+
 
 
 <!-- # library(prospectr) -->
